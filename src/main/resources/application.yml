@@ -1,0 +1,19 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: "jdbc:postgresql://${db.host}:5432/image_gallery"
+    username: ${rds.username}
+    password: ${rds.password}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+amazon:
+  s3:
+    bucket-name: image-gallery
+    endpoint: https://image-gallery.s3-eu-central-1.amazonaws.com/
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
