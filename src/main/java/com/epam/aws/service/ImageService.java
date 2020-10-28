@@ -1,5 +1,6 @@
 package com.epam.aws.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -8,11 +9,11 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.epam.aws.dto.Image;
 import com.epam.aws.repository.ImageRepository;
-import com.epam.aws.util.AmazonClient;
 import com.epam.aws.util.AwsUtils;
 import com.epam.aws.util.FileUtils;
 import com.epam.aws.util.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,24 +34,27 @@ public class ImageService {
     private ImageRepository repository;
 
     @Autowired
-    private AmazonClient client;
+    private AmazonS3 s3Client;
+
+    @Value("${amazon.s3.bucket-name}")
+    private String bucketName;
 
     public void uploadFileToS3(MultipartFile file) throws IOException {
         try {
             TransferManager tm = TransferManagerBuilder.standard()
-                                                       .withS3Client(client.getClient())
+                                                       .withS3Client(s3Client)
                                                        .build();
             File fileFromMultipart = FileUtils.convertMultipartToFile(file);
             String normalizedFilename = fileFromMultipart.getName().replace(" ", "_");
-            Upload upload = tm.upload(new PutObjectRequest(client.getBucketName(),
+            Upload upload = tm.upload(new PutObjectRequest(bucketName,
                     normalizedFilename,
                     fileFromMultipart)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             upload.waitForCompletion();
             Image image = Image
                     .builder()
-                    .imageLocation(new URL(((AmazonS3Client) client.getClient())
-                            .getResourceUrl(client.getBucketName(), normalizedFilename)))
+                    .imageLocation(new URL(((AmazonS3Client) s3Client)
+                            .getResourceUrl(bucketName, normalizedFilename)))
                     .dateCreated(LocalDateTime.now())
                     .imageName(normalizedFilename)
                     .build();
@@ -62,13 +66,13 @@ public class ImageService {
 
     public URL getImageByName(String name) {
         repository.findByImageName(name);
-        return client.getClient().generatePresignedUrl(AwsUtils.getPresignedUrlRequest(client.getBucketName(), name));
+        return s3Client.generatePresignedUrl(AwsUtils.getPresignedUrlRequest(bucketName, name));
     }
 
     public URL getRandomImage() {
         List<Image> savedImages = repository.findAll();
         Image randomImage = savedImages.get(RandomUtils.getRandomInt(savedImages.size() - 1));
-        return client.getClient().generatePresignedUrl(AwsUtils.getPresignedUrlRequest(client.getBucketName(),
+        return s3Client.generatePresignedUrl(AwsUtils.getPresignedUrlRequest(bucketName,
                 randomImage.getImageName()));
 
     }

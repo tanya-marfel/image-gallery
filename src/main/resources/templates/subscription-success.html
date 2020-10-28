@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Success</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link href="/css/subscription.css" th:href="@{/css/subscription.css}" rel="stylesheet" media="all"/>
+</head>
+<body>
+<div class="newsletter-subscribe">
+    <div class="container">
+        <div class="intro">
+            <div th:switch="${action}">
+                <h2 class="text-center" th:case="'subscribe-error'">Subscription to <span
+                        th:text="${bucketName}"/> notifications already exists!</h2>
+                <h2 class="text-center" th:case="'subscribe-success'">Successfully subscribed to the uploads to <span
+                        th:text="${bucketName}"/> bucket. Please, check the email box to confirm the subscription.</h2>
+                <h2 class="text-center" th:case="'unsubscribe-success'">Successfully unsubscribed from the updates in
+                    <span
+                            th:text="${bucketName}"/> bucket</h2>
+                <h2 class="text-center" th:case="'unsubscribe-error'">No subscription found for the given endpoint</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

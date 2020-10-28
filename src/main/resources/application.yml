@@ -1,4 +1,11 @@
+debug: true
 spring:
+  resources:
+    chain:
+      strategy:
+        content:
+          enabled: true
+          paths: /**
   jpa:
     hibernate:
       ddl-auto: create
@@ -13,7 +20,7 @@ spring:
       max-request-size: 10MB
 amazon:
   s3:
-    bucket-name: image-gallery
+    bucket-name: aws-image-gallery
     endpoint: https://image-gallery.s3-eu-central-1.amazonaws.com/
     access-key: ${AWS_ACCESS_KEY_ID}
     secret-key: ${AWS_SECRET_ACCESS_KEY}
