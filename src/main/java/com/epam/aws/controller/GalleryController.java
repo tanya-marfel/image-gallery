@@ -1,5 +1,6 @@
 package com.epam.aws.controller;
 
+import com.epam.aws.ImageNotFoundException;
 import com.epam.aws.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -27,7 +29,11 @@ public class GalleryController {
 
     @GetMapping("/api/images/random")
     public ModelAndView getRandomImage() {
-        return new ModelAndView("redirect:" + storageService.getRandomImage().toString());
+        if (storageService.getRandomImage() != null) {
+            return new ModelAndView("redirect:" + storageService.getRandomImage().toString());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No image has been uploaded to the bucket");
+        }
     }
 
     @PostMapping("/api/images")

@@ -71,9 +71,14 @@ public class ImageService {
 
     public URL getRandomImage() {
         List<Image> savedImages = repository.findAll();
-        Image randomImage = savedImages.get(RandomUtils.getRandomInt(savedImages.size() - 1));
-        return s3Client.generatePresignedUrl(AwsUtils.getPresignedUrlRequest(bucketName,
-                randomImage.getImageName()));
+
+        Image randomImage = null;
+        if (savedImages.size() > 0) {
+            randomImage = savedImages.get(RandomUtils.getRandomInt(savedImages.size() - 1));
+            return s3Client.generatePresignedUrl(AwsUtils.getPresignedUrlRequest(bucketName,
+                    randomImage.getImageName()));
+        }
+        return null;
 
     }
 }

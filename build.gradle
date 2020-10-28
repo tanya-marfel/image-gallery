@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id "io.freefair.lombok" version "5.2.1"
     id 'java'
+    id 'war'
 }
 
 group = 'com.epam.aws'
