@@ -6,6 +6,5 @@ import lombok.Data;
 public class SubscriptionForm {
 
     private String email;
-    private String bucket;
 
 }

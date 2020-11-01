@@ -1,6 +1,5 @@
 package com.epam.aws.controller;
 
-import com.epam.aws.ImageNotFoundException;
 import com.epam.aws.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

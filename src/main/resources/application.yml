@@ -8,7 +8,7 @@ spring:
           paths: /**
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     url: "jdbc:postgresql://${db.host}:5432/image_gallery"
@@ -21,6 +21,8 @@ spring:
 amazon:
   s3:
     bucket-name: aws-image-gallery
-    endpoint: https://image-gallery.s3-eu-central-1.amazonaws.com/
     access-key: ${AWS_ACCESS_KEY_ID}
-    secret-key: ${AWS_SECRET_ACCESS_KEY}
+    secret-key: ${AWS_ACCESS_KEY_ID}
+  sns:
+    topicArn: arn:aws:sns:eu-central-1:759046257668:S3UploadNotification_aws-image-gallery
+    topicName: S3UploadNotification_${amazon.s3.bucket-name}

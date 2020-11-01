@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  TopicName:
+    Type: String
+    Default: S3UploadNotification
+    Description: Topic name to display
+  BucketName:
+    Type: String
+    Default: aws-image-gallery
+    Description: Bucket to use SNS for
+Resources:
+  S3UploadTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Ref TopicName
+      TopicName: !Ref TopicName
+  S3UploadTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    DependsOn: S3UploadTopic
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: 1
+            Effect: Allow
+            Principal:
+              AWS: "*"
+            Action:
+              - 'sns:Subscribe'
+              - 'sns:Publish'
+            Resource: !Ref S3UploadTopic
+            Condition:
+              ArnLike:
+                "aws:SourceArn": !Sub 'arn:aws:s3:*:*:${BucketName}'
+      Topics:
+        - !Ref S3UploadTopic

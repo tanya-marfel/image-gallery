@@ -5,6 +5,7 @@ import com.amazonaws.services.sns.model.UnsubscribeResult;
 import com.epam.aws.model.SubscriptionForm;
 import com.epam.aws.service.SnsSubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,17 +28,19 @@ public class SubscriptionController {
     @Autowired
     private SnsSubscriptionService subscriptionService;
 
+    @Value("${amazon.s3.bucket-name}")
+    private String bucketName;
+
     @PostMapping("/subscribe")
     public RedirectView subscribe(@ModelAttribute SubscriptionForm subscriptionForm,
                                   final RedirectAttributes redirectAttributes) {
-        SubscribeResult result = subscriptionService.createSubscription(subscriptionForm.getEmail(),
-                subscriptionForm.getBucket());
+        SubscribeResult result = subscriptionService.createSubscription(subscriptionForm.getEmail());
         if (result.getSubscriptionArn() == null) {
             redirectAttributes.addFlashAttribute(ACTION_ATTRIBUTE, "subscribe-error");
         } else {
             redirectAttributes.addFlashAttribute(ACTION_ATTRIBUTE, "subscribe-success");
         }
-        redirectAttributes.addFlashAttribute("bucketName", subscriptionForm.getBucket());
+        redirectAttributes.addFlashAttribute("bucketName", bucketName);
         return new RedirectView(SUBSCRIPTION_SUCCESS_VIEW, true);
     }
 
@@ -59,13 +62,13 @@ public class SubscriptionController {
     public RedirectView unsubscribe(@ModelAttribute SubscriptionForm subscriptionForm,
                                     final RedirectAttributes redirectAttributes) {
         List<UnsubscribeResult> results =
-                subscriptionService.unsubscribeFromTopic(subscriptionForm.getEmail(), subscriptionForm.getBucket());
+                subscriptionService.unsubscribeFromTopic(subscriptionForm.getEmail(), bucketName);
         if (results.size() > 0) {
             redirectAttributes.addFlashAttribute(ACTION_ATTRIBUTE, "unsubscribe-success");
         } else {
             redirectAttributes.addFlashAttribute(ACTION_ATTRIBUTE, "unsubscribe-error");
         }
-        redirectAttributes.addFlashAttribute("bucketName", subscriptionForm.getBucket());
+        redirectAttributes.addFlashAttribute("bucketName", bucketName);
         return new RedirectView(SUBSCRIPTION_SUCCESS_VIEW, true);
     }
 
